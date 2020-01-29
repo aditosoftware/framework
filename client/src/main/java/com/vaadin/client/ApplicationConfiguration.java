@@ -24,6 +24,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -685,10 +686,19 @@ public class ApplicationConfiguration implements EntryPoint {
     static void endDependencyLoading() {
         dependenciesLoading--;
         if (dependenciesLoading == 0 && !callbacks.isEmpty()) {
-            for (Command cmd : callbacks) {
+            ImmutableList<Command> immutableCommandList = ImmutableList
+                    .copyOf(callbacks);
+            callbacks.clear();
+            for (Command cmd : immutableCommandList) {
                 cmd.execute();
             }
-            callbacks.clear();
+            if (0 < callbacks.size()) {
+                getLogger().info(
+                        "Callbacks are registered during execution of other callbacks "
+                                + "[callbacks.size(): " + callbacks.size()
+                                + ", dependenciesLoading: "
+                                + dependenciesLoading + "]");
+            }
         }
     }
 
