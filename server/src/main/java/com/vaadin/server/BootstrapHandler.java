@@ -16,58 +16,33 @@
 
 package com.vaadin.server;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.jsoup.nodes.DataNode;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.DocumentType;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.parser.Tag;
-
-import com.vaadin.annotations.Viewport;
-import com.vaadin.annotations.ViewportGeneratorClass;
+import com.vaadin.annotations.*;
 import com.vaadin.server.DependencyFilter.FilterContext;
 import com.vaadin.server.communication.AtmospherePushConnection;
-import com.vaadin.shared.ApplicationConstants;
-import com.vaadin.shared.VaadinUriResolver;
-import com.vaadin.shared.Version;
+import com.vaadin.shared.*;
 import com.vaadin.shared.communication.PushMode;
-import com.vaadin.ui.Dependency;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Dependency.Type;
-import com.vaadin.ui.UI;
 import com.vaadin.util.ReflectTools;
-
-import elemental.json.Json;
-import elemental.json.JsonException;
-import elemental.json.JsonObject;
+import elemental.json.*;
 import elemental.json.impl.JsonUtil;
+import org.jsoup.nodes.*;
+import org.jsoup.parser.Tag;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Handles the initial request to start the application.
  *
  * @author Vaadin Ltd
  * @since 7.0.0
- *
  * @deprecated As of 7.0. Will likely change or be removed in a future version
  */
 @Deprecated
@@ -211,7 +186,7 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
 
         /**
          * Gets the application id.
-         *
+         * <p>
          * The application id is defined by
          * {@link VaadinService#getMainDivId(VaadinSession, VaadinRequest, Class)}
          *
@@ -640,7 +615,6 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
      * rendered.
      *
      * @param context
-     *
      * @throws IOException
      */
     private void setupMainDiv(BootstrapContext context) throws IOException {
@@ -765,6 +739,11 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
         String themeName = context.getThemeName();
         if (themeName != null) {
             appConfig.put("theme", themeName);
+
+            String themeVersion = vaadinService.getThemeVersion(themeName);
+            if (themeVersion != null) {
+                appConfig.put("themeVersion", themeVersion);
+            }
         }
 
         // Ignore restartApplication that might be passed to UI init
@@ -876,13 +855,12 @@ public abstract class BootstrapHandler extends SynchronizedRequestHandler {
 
     /**
      * Get the URI for the application theme.
-     *
+     * <p>
      * A portal-wide default theme is fetched from the portal shared resource
      * directory (if any), other themes from the portlet.
      *
      * @param context
      * @param themeName
-     *
      * @return
      */
     public String getThemeUri(BootstrapContext context, String themeName) {

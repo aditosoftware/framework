@@ -228,9 +228,10 @@
                 var vaadinDir = getConfig('vaadinDir');
 
                 var versionInfo = getConfig('versionInfo');
+                var themeVersion = getConfig('themeVersion');
 
                 var themeUri = vaadinDir + 'themes/' + getConfig('theme');
-                loadTheme(themeUri, versionInfo && versionInfo['vaadinVersion']);
+                loadTheme(themeUri, themeVersion || (versionInfo && versionInfo['vaadinVersion']));
 
                 var widgetset = getConfig('widgetset');
                 var widgetsetUrl = getConfig('widgetsetUrl');

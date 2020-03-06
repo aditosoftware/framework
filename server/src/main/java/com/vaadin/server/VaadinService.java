@@ -2279,4 +2279,20 @@ public abstract class VaadinService implements Serializable {
         return connectorId;
     }
 
+    /**
+     * Gets the theme version so that an updated theme will load instead of the
+     * cached theme.
+     *
+     * Override this method if you have a more complex setup that won't work
+     * with styles.css timestamp used in default service implementations.
+     *
+     * @since
+     *
+     * @param themeName
+     *            name of the theme
+     * @return theme version string or null if built-in theme
+     */
+    public String getThemeVersion(String themeName) {
+        return null;
+    }
 }

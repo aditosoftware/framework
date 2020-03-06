@@ -17,6 +17,7 @@ public class ProgressBarStaticReindeerTest extends MultiBrowserTest {
         return Arrays.asList(Browser.CHROME.getDesiredCapabilities(),
                 Browser.FIREFOX.getDesiredCapabilities());
     }
+
     @Test
     public void compareScreenshot() throws Exception {
         openTestURL();

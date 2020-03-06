@@ -1162,8 +1162,12 @@ public class UIConnector extends AbstractSingleComponentContainerConnector
         String themeUrl = getConnection()
                 .translateVaadinUri(ApplicationConstants.VAADIN_PROTOCOL_PREFIX
                         + "themes/" + theme + "/styles" + ".css");
-        // Parameter appended to bypass caches after version upgrade.
-        themeUrl += "?v=" + Version.getFullVersion();
+        if (getState().themeVersion != null) {
+            themeUrl += "?v=" + getState().themeVersion;
+        } else {
+            // Parameter appended to bypass caches after version upgrade.
+            themeUrl += "?v=" + Version.getFullVersion();
+        }
         return themeUrl;
 
     }

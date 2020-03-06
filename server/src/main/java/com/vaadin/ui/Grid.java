@@ -2095,8 +2095,8 @@ public class Grid<T> extends AbstractListing<T> implements HasComponents,
          * all currently available row data to be recreated and sent to the
          * client.
          *
-         * Note: Setting a new renderer will reset presentation provider if
-         * it exists.
+         * Note: Setting a new renderer will reset presentation provider if it
+         * exists.
          *
          * @param renderer
          *            the new renderer
@@ -3043,8 +3043,8 @@ public class Grid<T> extends AbstractListing<T> implements HasComponents,
     /**
      * Removes the given column from this {@link Grid}.
      *
-     * Note: If you have Editor with binding in this Grid to this property, you need to remove that
-     * using removeBinding method provided by Binder.
+     * Note: If you have Editor with binding in this Grid to this property, you
+     * need to remove that using removeBinding method provided by Binder.
      *
      * @param column
      *            the column to remove

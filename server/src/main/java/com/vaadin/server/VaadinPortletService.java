@@ -20,7 +20,7 @@ import static com.vaadin.shared.util.SharedUtil.trimTrailingSlashes;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.*;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,6 +40,7 @@ import com.vaadin.server.communication.PortletListenerNotifier;
 import com.vaadin.server.communication.PortletStateAwareRequestHandler;
 import com.vaadin.server.communication.PortletUIInitHandler;
 import com.vaadin.ui.UI;
+import com.vaadin.util.ResourceHelper;
 
 public class VaadinPortletService extends VaadinService {
     private final VaadinPortlet portlet;
@@ -382,15 +383,13 @@ public class VaadinPortletService extends VaadinService {
                 || currentSessionLock == lock) : "Changing the lock for a session is not allowed";
 
         getWrappedPortletSession(wrappedSession).setAttribute(
-                getLockAttributeName(), lock,
-                PortletSession.APPLICATION_SCOPE);
+                getLockAttributeName(), lock, PortletSession.APPLICATION_SCOPE);
     }
 
     @Override
     protected Lock getSessionLock(WrappedSession wrappedSession) {
-        Object lock = getWrappedPortletSession(wrappedSession)
-                .getAttribute(getLockAttributeName(),
-                        PortletSession.APPLICATION_SCOPE);
+        Object lock = getWrappedPortletSession(wrappedSession).getAttribute(
+                getLockAttributeName(), PortletSession.APPLICATION_SCOPE);
 
         if (lock instanceof ReentrantLock) {
             return (ReentrantLock) lock;
@@ -403,5 +402,28 @@ public class VaadinPortletService extends VaadinService {
         throw new RuntimeException(
                 "Something else than a ReentrantLock was stored in the "
                         + getLockAttributeName() + " in the session");
+    }
+
+    @Override
+    public String getThemeVersion(String themeName) {
+        if (themeName != null) {
+            try {
+
+                String resource = "styles.css";
+                URL resourceUrl = portlet.getPortletContext()
+                        .getResource("/" + VaadinPortlet.THEME_DIR_PATH + '/'
+                                + themeName + "/" + resource);
+
+                long timestamp = ResourceHelper
+                        .getThemeResourceTimestamp(resourceUrl);
+                if (timestamp == -1) {
+                    return null;
+                }
+                return Long.toString(timestamp);
+            } catch (MalformedURLException e) {
+                getLogger().log(Level.FINE, "Failed to find resource URL.", e);
+            }
+        }
+        return null;
     }
 }

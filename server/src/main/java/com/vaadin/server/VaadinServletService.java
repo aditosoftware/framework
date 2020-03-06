@@ -31,6 +31,7 @@ import com.vaadin.server.communication.PushRequestHandler;
 import com.vaadin.server.communication.ServletBootstrapHandler;
 import com.vaadin.server.communication.ServletUIInitHandler;
 import com.vaadin.ui.UI;
+import com.vaadin.util.ResourceHelper;
 
 public class VaadinServletService extends VaadinService {
 
@@ -286,6 +287,32 @@ public class VaadinServletService extends VaadinService {
         }
         appId = appId + "-" + hashCode;
         return appId;
+    }
+
+    @Override
+    public String getThemeVersion(String themeName) {
+        if (themeName != null) {
+            String filename = "/" + VaadinPortlet.THEME_DIR_PATH + '/'
+                    + themeName + "/styles.css";
+
+            // Search for theme file from the ServletContext and from the
+            // classpath.
+            URL resourceUrl = null;
+            try {
+                resourceUrl = getServlet().findResourceURL(filename);
+            } catch (IOException pE) {
+                getLogger().log(Level.FINE, "Failed to find resource URL.", pE);
+            }
+
+            long timestamp = ResourceHelper
+                    .getThemeResourceTimestamp(resourceUrl);
+            if (timestamp == -1) {
+                return null;
+            }
+            return Long.toString(timestamp);
+        }
+
+        return null;
     }
 
     private static final Logger getLogger() {

@@ -87,6 +87,11 @@ public class UIState extends AbstractSingleComponentContainerState {
     }
 
     /**
+     * Theme version related to theme cache handling.
+     */
+    public String themeVersion;
+
+    /**
      * Enable Mobile HTML5 DnD support.
      *
      * @since 8.1

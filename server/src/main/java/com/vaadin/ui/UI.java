@@ -1342,6 +1342,11 @@ public abstract class UI extends AbstractSingleComponentContainer
         } else {
             getState().theme = VaadinServlet.stripSpecialChars(theme);
         }
+
+        if (getSession() != null) {
+            getState().themeVersion = getSession().getService()
+                    .getThemeVersion(theme);
+        }
     }
 
     /**
