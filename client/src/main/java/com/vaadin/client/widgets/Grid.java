@@ -2712,11 +2712,6 @@ public class Grid<T> extends ResizeComposite implements HasSelectionHandlers<T>,
                     ++i;
                 } while (cell != null);
             }
-            if (columnIndexDOM >= escalator.getColumnConfiguration()
-                    .getFrozenColumnCount()) {
-                escalator.scrollToColumn(columnIndexDOM, ScrollDestination.ANY,
-                        10);
-            }
 
             if (this.containerWithFocus == container) {
                 if (oldRange.equals(cellFocusRange) && oldRow != rowWithFocus) {
