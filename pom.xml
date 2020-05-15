@@ -10,7 +10,7 @@
     <artifactId>vaadin-root</artifactId>
     <name>vaadin-root</name>
     <packaging>pom</packaging>
-    <version>8.9.5.adito</version>
+    <version>8.9.6.adito</version>
 
     <prerequisites>
         <maven>3.1.0</maven>
@@ -61,7 +61,7 @@
 
         <!-- Dependency unpack directory -->
         <dependency.unpack.directory>${project.build.directory}/dependency-unpack</dependency.unpack.directory>
- 
+
         <jetty.version>9.4.17.v20190418</jetty.version>
 
         <!-- Sonar properties -->
@@ -151,7 +151,7 @@
                 <artifactId>vaadin-sass-compiler</artifactId>
                 <version>${vaadin.sass.version}</version>
                 <exclusions>
-                    <!-- No need to have the minifier included for development 
+                    <!-- No need to have the minifier included for development
                         mode on-the-fly compilation -->
                     <exclusion>
                         <groupId>com.yahoo.platform.yui</groupId>
@@ -450,7 +450,7 @@
                 <plugin>
                     <groupId>com.vaadin</groupId>
                     <artifactId>vaadin-maven-plugin</artifactId>
-                    <version>${vaadin.plugin.version}</version>
+                    <version>8.9.4</version>
                 </plugin>
                 <plugin>
                     <groupId>net.revelc.code.formatter</groupId>
@@ -676,7 +676,7 @@
             </modules>
         </profile>
         <profile>
-            <!-- Profile for running integration tests. Vaadin version to 
+            <!-- Profile for running integration tests. Vaadin version to
                 be tested can be defined with property vaadin.version -->
             <id>slowtest</id>
             <modules>
@@ -684,7 +684,7 @@
             </modules>
         </profile>
         <profile>
-            <!-- This profile builds the assembled parts of the Framework 
+            <!-- This profile builds the assembled parts of the Framework
                 for website release. Should be run after running the release profile -->
             <id>release-assemblies</id>
             <modules>
@@ -693,7 +693,7 @@
             </modules>
         </profile>
         <profile>
-            <!-- Release build only builds artifacts that are deployed or 
+            <!-- Release build only builds artifacts that are deployed or
                 needed by them -->
             <id>release</id>
             <properties>
@@ -759,7 +759,7 @@
             </build>
         </profile>
         <profile>
-            <!-- Pre-release build only builds artifacts that are deployed or 
+            <!-- Pre-release build only builds artifacts that are deployed or
                 needed by them -->
             <id>prerelease</id>
             <properties>
@@ -825,7 +825,7 @@
             </build>
         </profile>
         <profile>
-            <!-- Snapshot build only builds artifacts that are deployed or 
+            <!-- Snapshot build only builds artifacts that are deployed or
                 needed by them -->
             <id>snapshot</id>
             <properties>
@@ -890,10 +890,10 @@
             </build>
         </profile>
         <profile>
-            <!-- This profile is disjoint with default profile. It allows 
-                to prevent running build for all available modules but restricts a number 
-                of modules to specified here only (which allows to avoid long time compilation 
-                for projects that are not needed since japicmp works with compiled classes). 
+            <!-- This profile is disjoint with default profile. It allows
+                to prevent running build for all available modules but restricts a number
+                of modules to specified here only (which allows to avoid long time compilation
+                for projects that are not needed since japicmp works with compiled classes).
                 ! -->
             <id>apicmp</id>
             <modules>
@@ -956,7 +956,7 @@
             </build>
         </profile>
         <profile>
-            <!-- Testing profile for measurement tests. Use along with default 
+            <!-- Testing profile for measurement tests. Use along with default
                 profile -->
             <id>measurements</id>
             <properties>
