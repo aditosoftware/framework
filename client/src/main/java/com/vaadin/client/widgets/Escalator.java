@@ -37,6 +37,7 @@ import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
 import com.google.gwt.animation.client.AnimationScheduler.AnimationHandle;
 import com.google.gwt.core.client.Duration;
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
@@ -759,13 +760,13 @@ public class Escalator extends Widget
         /*-{
             var vScroll = esc.@com.vaadin.client.widgets.Escalator::verticalScrollbar;
             var vScrollElem = vScroll.@com.vaadin.client.widget.escalator.ScrollbarBundle::getElement()();
-
+        
             var hScroll = esc.@com.vaadin.client.widgets.Escalator::horizontalScrollbar;
             var hScrollElem = hScroll.@com.vaadin.client.widget.escalator.ScrollbarBundle::getElement()();
-
+        
             return $entry(function(e) {
                 var target = e.target;
-
+        
                 // in case the scroll event was native (i.e. scrollbars were dragged, or
                 // the scrollTop/Left was manually modified), the bundles have old cache
                 // values. We need to make sure that the caches are kept up to date.
@@ -786,29 +787,29 @@ public class Escalator extends Widget
             return $entry(function(e) {
                 var deltaX = e.deltaX ? e.deltaX : -0.5*e.wheelDeltaX;
                 var deltaY = e.deltaY ? e.deltaY : -0.5*e.wheelDeltaY;
-
+        
                 // Delta mode 0 is in pixels; we don't need to do anything...
-
+        
                 // A delta mode of 1 means we're scrolling by lines instead of pixels
                 // We need to scale the number of lines by the default line height
                 if (e.deltaMode === 1) {
                     var brc = esc.@com.vaadin.client.widgets.Escalator::body;
                     deltaY *= brc.@com.vaadin.client.widgets.Escalator.AbstractRowContainer::getDefaultRowHeight()();
                 }
-
+        
                 // Other delta modes aren't supported
                 if ((e.deltaMode !== undefined) && (e.deltaMode >= 2 || e.deltaMode < 0)) {
                     var msg = "Unsupported wheel delta mode \"" + e.deltaMode + "\"";
-
+        
                     // Print warning message
                     esc.@com.vaadin.client.widgets.Escalator::logWarning(*)(msg);
                 }
-
+        
                 // IE8 has only delta y
                 if (isNaN(deltaY)) {
                     deltaY = -0.5*e.wheelDelta;
                 }
-
+        
                 @com.vaadin.client.widgets.Escalator.JsniUtil::moveScrollFromEvent(*)(esc, deltaX, deltaY, e);
             });
         }-*/;
@@ -2240,6 +2241,10 @@ public class Escalator extends Widget
 
             TableCellElement cellClone = TableCellElement
                     .as((Element) cell.cloneNode(withContent));
+            if (!withContent || columnConfiguration
+                    .getColumnWidth(cell.getCellIndex()) < 0) {
+                clearRelativeWidthContents(cellClone);
+            }
             cellClone.getStyle().clearHeight();
             cellClone.getStyle().clearWidth();
 
@@ -2257,6 +2262,41 @@ public class Escalator extends Widget
             cellClone.removeFromParent();
 
             return requiredWidth;
+        }
+
+        /**
+         * Contents of an element that is configured to have relative width
+         * shouldn't be taken into consideration when measuring minimum widths.
+         * Thus any such contents within the element hierarchy need to be
+         * cleared out for accurate results. The element itself should remain,
+         * however, in case it has styles that affect the end results.
+         *
+         * @param elem
+         *            an element that might have unnecessary content that
+         *            interferes with minimum width calculations
+         */
+        private void clearRelativeWidthContents(Element elem) {
+            try {
+                String width = elem.getStyle().getWidth();
+                if (width != null && width.endsWith("%")) {
+                    if (elem.hasChildNodes()) {
+                        elem.removeAllChildren();
+                        // add a fake child so that :empty behavior doesn't
+                        // change
+                        elem.setInnerHTML("<a/>");
+                    } else {
+                        elem.setInnerHTML(null);
+                    }
+                }
+            } catch (JavaScriptException e) {
+                // no width set, move on
+            }
+            for (int i = 0; i < elem.getChildCount(); ++i) {
+                Node node = elem.getChild(i);
+                if (node instanceof Element) {
+                    clearRelativeWidthContents((Element) node);
+                }
+            }
         }
 
         /**
@@ -4578,7 +4618,7 @@ public class Escalator extends Widget
                 // for a gap if a details row is later closed (e.g. by user)
                 final int addToBottom = Math.min(rowDiff,
                         getRowCount() - logicalTargetIndex);
-                final int addToTop = rowDiff - addToBottom;
+                final int addToTop = Math.max(rowDiff - addToBottom, 0);
 
                 if (addToTop > 0) {
                     fillAndPopulateEscalatorRowsIfNeeded(0,
@@ -4587,8 +4627,30 @@ public class Escalator extends Widget
                     updateTopRowLogicalIndex(-addToTop);
                 }
                 if (addToBottom > 0) {
-                    fillAndPopulateEscalatorRowsIfNeeded(visualTargetIndex,
-                            logicalTargetIndex, addToBottom);
+                    // take into account that rows may have got added to top as
+                    // well, affects visual but not logical indexing
+                    fillAndPopulateEscalatorRowsIfNeeded(
+                            visualTargetIndex + addToTop, logicalTargetIndex,
+                            addToBottom);
+
+                    // adding new rows due to resizing may have created a gap in
+                    // the middle, check whether the existing rows need moving
+                    double rowTop = getRowTop(oldTopRowLogicalIndex);
+                    if (rowTop > getRowTop(visualRowOrder.get(addToTop))) {
+                        for (int i = addToTop; i < visualTargetIndex; i++) {
+
+                            final TableRowElement tr = visualRowOrder.get(i);
+
+                            setRowPosition(tr, 0, rowTop);
+                            rowTop += getDefaultRowHeight();
+                            SpacerContainer.SpacerImpl spacer = spacerContainer
+                                    .getSpacer(oldTopRowLogicalIndex + i);
+                            if (spacer != null) {
+                                spacer.setPosition(0, rowTop);
+                                rowTop += spacer.getHeight();
+                            }
+                        }
+                    }
                 }
             } else if (rowDiff < 0) {
                 // rows need to be removed
@@ -7713,14 +7775,11 @@ public class Escalator extends Widget
     public void scrollToRowAndSpacer(final int rowIndex,
             final ScrollDestination destination, final int padding)
             throws IllegalArgumentException {
-        // wait for the layout phase to finish
-        Scheduler.get().scheduleFinally(() -> {
-            if (rowIndex != -1) {
-                verifyValidRowIndex(rowIndex);
-            }
-            body.scrollToRowSpacerOrBoth(rowIndex, destination, padding,
-                    ScrollType.ROW_AND_SPACER);
-        });
+        if (rowIndex != -1) {
+            verifyValidRowIndex(rowIndex);
+        }
+        body.scrollToRowSpacerOrBoth(rowIndex, destination, padding,
+                ScrollType.ROW_AND_SPACER);
     }
 
     private static void validateScrollDestination(
