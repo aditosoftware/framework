@@ -5319,8 +5319,7 @@ public class Grid<T> extends ResizeComposite implements HasSelectionHandlers<T>,
                 } else {
                     this.hidden = hidden;
 
-                    int columnIndex = grid.getVisibleColumns()
-                            .indexOf(this);
+                    int columnIndex = grid.getVisibleColumns().indexOf(this);
                     grid.escalator.getColumnConfiguration()
                             .insertColumns(columnIndex, 1);
 
@@ -7859,8 +7858,10 @@ public class Grid<T> extends ResizeComposite implements HasSelectionHandlers<T>,
 
                         cell = new Cell(rowIndex, colIndex, cellElement);
                     } catch (IllegalStateException exception) {
-                        // IllegalStateException may occur if user has scrolled Grid so
-                        // that Escalator has updated, and row under Editor is no longer
+                        // IllegalStateException may occur if user has scrolled
+                        // Grid so
+                        // that Escalator has updated, and row under Editor is
+                        // no longer
                         // there
                         return;
                     }

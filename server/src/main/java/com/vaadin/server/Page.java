@@ -998,19 +998,22 @@ public class Page implements Serializable {
     public URI getLocation() throws IllegalStateException {
         if (location == null) {
             if (uI.getSession() != null && !uI.getSession().getConfiguration()
-                       .isSendUrlsAsParameters()) {
-                throw new IllegalStateException("Location is not available as the "
-                        + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
-                        + " parameter is configured as false");
+                    .isSendUrlsAsParameters()) {
+                throw new IllegalStateException(
+                        "Location is not available as the "
+                                + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
+                                + " parameter is configured as false");
             } else if (VaadinSession.getCurrent() == null) {
-                throw new IllegalStateException("Location is not available as the "
-                        + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
-                        + " parameter state cannot be determined");
+                throw new IllegalStateException(
+                        "Location is not available as the "
+                                + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
+                                + " parameter state cannot be determined");
             } else if (!VaadinSession.getCurrent().getConfiguration()
-                       .isSendUrlsAsParameters()) {
-                throw new IllegalStateException("Location is not available as the "
-                        + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
-                        + " parameter is configured as false");
+                    .isSendUrlsAsParameters()) {
+                throw new IllegalStateException(
+                        "Location is not available as the "
+                                + Constants.SERVLET_PARAMETER_SENDURLSASPARAMETERS
+                                + " parameter is configured as false");
             }
         }
         return location;
