@@ -1,6 +1,6 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vaadin/framework-8?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-# Vaadin Framework
+# Vaadin Framework (ADITO fork)
 
 *[Vaadin Framework](https://vaadin.com/framework) allows you to build modern web apps efficiently in plain Java, without touching low level web technologies.*
 
@@ -10,6 +10,11 @@ To contribute, first refer to [Contributing Code](https://github.com/vaadin/fram
 for general instructions and requirements for contributing code to the Vaadin framework.
 
 Instructions on how to set up a working environment for developing the Vaadin Framework follow below.
+
+## ADITO specific
+As this is an internal fork of the Vaadin framework, **we use a custom versioning scheme**.
+The scheme is described [here](README-Versioning.md).
+
 
 ## Building a package
 
