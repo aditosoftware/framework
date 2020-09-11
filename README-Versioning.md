@@ -4,7 +4,7 @@ For the internal distribution we use a custom versioning scheme to identify the 
 
 E.g. if the branch is based on Vaadin version *8.11.2* with the default patches, the following custom version shall be used:
 
-**8.11.2.adito.0** (For snapshots, just add *-SNAPSHOT*)
+**8.11.2.adito.1** (For snapshots, just add *-SNAPSHOT*)
 
 The first part identifies the actual Vaadin version, followed by the keyword *"adito"* and an additional incremental integer.
 
